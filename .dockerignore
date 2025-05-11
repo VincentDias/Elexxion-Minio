@@ -1,0 +1,19 @@
+# Ignorer les dossiers liés à l'environnement local
+__pycache__/
+*.log
+
+.env/
+
+.env
+*.secret
+
+.idea/
+.vscode/
+
+.DS_Store
+Thumbs.db
+
+*.zip
+
+tests/
+notebooks/

@@ -1,0 +1,26 @@
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# dotenv
+.env
+.env.*
+
+.vscode/
+.idea/
+
+.DS_Store
+.idea
+
+# MinIO-related
+data/
+*.parquet
+*.csv
+*.log
+
+# Minio client configuration
+mc-config/
