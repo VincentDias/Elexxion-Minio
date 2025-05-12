@@ -21,7 +21,7 @@ services:
       retries: 3
       start_period: 10s
 
-  minio-event-listener:
+  webhook:
     build:
       context: .
       dockerfile: Dockerfile.api
@@ -63,12 +63,13 @@ services:
     image: minio/mc
     container_name: mc
     depends_on:
-      - minio
+      init:
+        condition: service_completed_successfully
     entrypoint: >
       /bin/sh -c "
-      sleep 3;
+      sleep 5;
       mc alias set elexxion http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
-      mc event add elexxion/${MINIO_BUCKET} arn:minio:sqs::webhook:webhook --event "put" &&
+      mc event add elexxion/elexxion-elt arn:minio:sqs::webhook:webhook --event 'put' &&
       tail -f /dev/null
       "
     environment:
