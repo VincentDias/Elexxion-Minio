@@ -1,6 +1,7 @@
 services:
   minio:
     image: minio/minio
+    container_name: minio
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -67,8 +68,9 @@ services:
         condition: service_completed_successfully
     entrypoint: >
       /bin/sh -c "
+      sleep 5;
       mc alias set elexxion http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
-      mc event add elexxion/elexxion-elt arn:minio:sqs::webhook:webhook --event 'put' &&
+      mc event add elexxion/${MINIO_BUCKET} arn:minio:sqs::webhook:webhook --event 'put' &&
       tail -f /dev/null
       "
     environment:

@@ -3,6 +3,9 @@ from minio import Minio
 import os
 from pathlib import Path
 
+print("!!!!!!!!!!=== Début de scrapper.py ===!!!!!!!!!!")
+
+
 # Configuration MinIO
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
 MINIO_USER = os.getenv("MINIO_ROOT_USER")
@@ -22,7 +25,6 @@ client = Minio(
   secure=False
 )
 
-print("!!!!!!!!!!=== Début de scrapper.py ===!!!!!!!!!!")
 
 
 def list_repo_files(path=""):

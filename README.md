@@ -66,18 +66,18 @@ Chaque composant peut être géré, mis à jour et déployé indépendamment, ce
 ## ▶️ Lancement rapide
 
 ```bash
-  docker compose up --build
+docker compose up --build
 ```
 
-- Accès MinIO : http://localhost:9001
-- Accès Webhook API : http://localhost:8000
+- [MinIO Local](http://localhost:9001)  
+- [Webhook Local](http://localhost:8000)  
 
 ---
 
 ## 🧪 Tester le webhook manuellement
 
 ```bash
-  curl -X POST http://localhost:8000/ -H "Content-Type: application/json" -d '{"test": "ok"}'
+curl -X POST http://localhost:8000/ -H "Content-Type: application/json" -d '{"test": "ok"}'
 ```
 
 ---
@@ -85,8 +85,8 @@ Chaque composant peut être géré, mis à jour et déployé indépendamment, ce
 ## ⚙️ Fonctionnement du webhook
 
 - Tout fichier ou dossier déposé dans input/ du bucket elexxion-elt déclenche le webhook.
-- Si un fichier .csv nommé FD_csv_EECXX.csv est détecté, il est déplacé vers datas/emploi/.
-- Si un fichier .csv nommé Varmod_EEC_XXXX.csv est détecté, il est déplacé vers metadatas/emploi/.
+- Si un fichier .csv nommé FD_csv_EECXX.csv est détecté, il est déplacé vers raw/emploi/.
+- Si un fichier .csv nommé Varmod_EEC_XXXX.csv est détecté, il est déplacé vers metadata/emploi/.
 
 ---
 
@@ -104,6 +104,7 @@ MINIO_BUCKET=elexxion-elt
 ---
 
 ## ✅ Objectifs à venir
+
 - Détection automatique des erreurs dans les fichiers déposés
 - Traitement automatique Bronze → Silver → Gold
 - Intégration d’un modèle LightGBM avec tuning Optuna
