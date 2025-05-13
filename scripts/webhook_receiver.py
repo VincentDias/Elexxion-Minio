@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 import os
 import re
 from minio import Minio
+import urllib.parse
 
 app = FastAPI()
 
@@ -31,6 +32,8 @@ async def receive_event(request: Request):
       continue
 
     key = record.get("s3", {}).get("object", {}).get("key", "")
+    # Décoder l'URL de la clé
+    key = urllib.parse.unquote(key)
     print("this is key: ", key)
 
     if (key.endswith('/') or not os.path.splitext(key)[1]) and key.startswith("input/"):
