@@ -36,7 +36,6 @@ client = Minio(
     secret_key=MINIO_PASSWORD,
     secure=False
 )
-
 @app.post("/")
 async def receive_event(request: Request):
     event = await request.json()
@@ -53,6 +52,8 @@ async def receive_event(request: Request):
 
         bucket = record.get("s3", {}).get("bucket", {}).get("name", "")
         key = record.get("s3", {}).get("object", {}).get("key", "")
+
+        print("this is key: ", key)
 
         logging.info(f"Fichier ou dossier détecté : {key}")
 
