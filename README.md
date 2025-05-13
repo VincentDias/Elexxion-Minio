@@ -53,6 +53,7 @@ elexxion_ELT/
 ## 🧱 Architecture
 
 Ce projet repose sur une architecture modulaire basée sur des microservices, chacun conteneurisé avec Docker :
+
 - webhook_api : service FastAPI écoutant les événements webhook.
 - minio : service de stockage objet compatible S3.
 - init_structure : script autonome chargé d’initialiser l’arborescence du bucket.
