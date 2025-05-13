@@ -15,4 +15,5 @@ COPY scripts/init_structure.py ./scripts/init_structure.py
 COPY scripts/scrapper.py ./scripts/scrapper.py
 
 # Exécuter les autres scripts
-CMD ["sh", "-c", "python scripts/init_structure.py && python scripts/scrapper.py"]
+# CMD ["sh", "-c", "python scripts/init_structure.py && python scripts/scrapper.py"]
+CMD ["python", "scripts/scrapper.py"]
