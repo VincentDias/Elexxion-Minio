@@ -53,9 +53,9 @@ elexxion_ELT/
 ## 🧱 Architecture
 
 Ce projet repose sur une architecture modulaire basée sur des microservices, chacun conteneurisé avec Docker :
-- webhook_api : service FastAPI écoutant les événements webhook.
+- webhook : service FastAPI écoutant les événements webhook.
 - minio : service de stockage objet compatible S3.
-- init_structure : script autonome chargé d’initialiser l’arborescence du bucket.
+- init_structure : script autonome chargé d’initialiser le bucket minio et son arborescence.
 - minio client : configure l'événement webhook sur le bucket.
 
 Chaque composant peut être géré, mis à jour et déployé indépendamment, ce qui favorise la scalabilité, l’automatisation et la résilience.
@@ -69,7 +69,7 @@ Chaque composant peut être géré, mis à jour et déployé indépendamment, ce
 ```
 
 - Accès MinIO : http://localhost:9001
-- Accès Webhook API : http://localhost:8000
+- Accès Webhook API (écouteur) : http://localhost:8000
 
 ---
 
@@ -98,6 +98,8 @@ MINIO_ROOT_USER=minio
 MINIO_ROOT_PASSWORD=password
 MINIO_ENDPOINT=minio:9000
 MINIO_BUCKET=elexxion-elt
+MINIO_NOTIFY_WEBHOOK_ENABLE_webhook="on"
+MINIO_NOTIFY_WEBHOOK_ENDPOINT_webhook="http://webhook:8000/"
 ```
 
 ---
