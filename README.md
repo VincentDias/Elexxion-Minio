@@ -53,6 +53,8 @@ elexxion_ELT/
 ## 🧱 Architecture
 
 Ce projet repose sur une architecture modulaire basée sur des microservices, chacun conteneurisé avec Docker :
+
+- webhook_api : service FastAPI écoutant les événements webhook.
 - webhook : service FastAPI écoutant les événements webhook.
 - minio : service de stockage objet compatible S3.
 - init_structure : script autonome chargé d’initialiser le bucket minio et son arborescence.
@@ -65,27 +67,56 @@ Chaque composant peut être géré, mis à jour et déployé indépendamment, ce
 ## ▶️ Lancement rapide
 
 ```bash
-  docker compose up --build
+docker compose up --build
+docker compose build --no-cache
+```
+
+```bash
+docker rm -f $(docker ps -aq)
+docker rmi -f $(docker images -q)
+docker volume rm $(docker volume ls -q)
+docker network prune -f
+docker builder prune -af
+```
+
+```bash
+docker compose logs -f
+docker-compose restart webhook
+```
+
+```bash
+docker exec -it mc sh
+docker exec -it mc bash
+```
+
+```bash
+docker exec -it mc sh
+mc alias list
+mc ls elexxion/elexxion-bucket/input/
+mc cp /data/FD_csv_EEC22.csv elexxion/elexxion-bucket/input/
+mc cp ./FD_csv_EEC22.csv elexxion/elexxion-bucket/input/
 ```
 
 - Accès MinIO : http://localhost:9001
 - Accès Webhook API (écouteur) : http://localhost:8000
+- [MinIO Local](http://localhost:9001)  
+- [Webhook Local](http://localhost:8000)  
 
 ---
 
 ## 🧪 Tester le webhook manuellement
 
 ```bash
-  curl -X POST http://localhost:8000/ -H "Content-Type: application/json" -d '{"test": "ok"}'
+curl -X POST -H "Content-Type: application/json" -d @test_event.json http://localhost:8000/
 ```
 
 ---
 
 ## ⚙️ Fonctionnement du webhook
 
-- Tout fichier ou dossier déposé dans input/ du bucket elexxion-elt déclenche le webhook.
-- Si un fichier .csv nommé FD_csv_EECXX.csv est détecté, il est déplacé vers datas/emploi/.
-- Si un fichier .csv nommé Varmod_EEC_XXXX.csv est détecté, il est déplacé vers metadatas/emploi/.
+- Tout fichier ou dossier déposé dans le dossier input/ d'elexxion-bucket déclenche le webhook.
+- Si un fichier .csv nommé FD_csv_EECXX.csv est détecté, il est déplacé vers raw/emploi/.
+- Si un fichier .csv nommé Varmod_EEC_XXXX.csv est détecté, il est déplacé vers metadata/emploi/.
 
 ---
 
@@ -98,13 +129,12 @@ MINIO_ROOT_USER=minio
 MINIO_ROOT_PASSWORD=password
 MINIO_ENDPOINT=minio:9000
 MINIO_BUCKET=elexxion-elt
-MINIO_NOTIFY_WEBHOOK_ENABLE_webhook="on"
-MINIO_NOTIFY_WEBHOOK_ENDPOINT_webhook="http://webhook:8000/"
 ```
 
 ---
 
 ## ✅ Objectifs à venir
+
 - Détection automatique des erreurs dans les fichiers déposés
 - Traitement automatique Bronze → Silver → Gold
 - Intégration d’un modèle LightGBM avec tuning Optuna

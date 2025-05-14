@@ -1,6 +1,7 @@
 services:
   minio:
     image: minio/minio
+    container_name: minio
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -78,6 +79,25 @@ services:
       MINIO_BUCKET: ${MINIO_BUCKET}
     env_file:
       - .env
+
+  scrapper:
+    build:
+      context: .
+      dockerfile: Dockerfile.scrapper
+    container_name: scrapper
+    depends_on:
+      mc:
+        condition: service_completed_successfully
+    command: python /app/scripts/scrapper.py
+    environment:
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+    env_file:
+      - .env
+    volumes:
+      - ./scripts:/app/scripts
 
 volumes:
   minio_data:

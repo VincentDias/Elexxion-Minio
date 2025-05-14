@@ -14,6 +14,7 @@ __pycache__/
 .idea/
 
 .DS_Store
+**/.DS_Store
 .idea
 
 # MinIO-related
@@ -21,6 +22,3 @@ data/
 *.parquet
 *.csv
 *.log
-
-# Minio client configuration
-mc-config/
