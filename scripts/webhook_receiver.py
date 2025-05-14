@@ -3,6 +3,7 @@ import os
 import re
 from minio import Minio
 import urllib.parse
+from minio.commonconfig import CopySource
 
 app = FastAPI()
 
@@ -22,35 +23,65 @@ client = Minio(
 
 @app.post("/")
 async def receive_event(request: Request):
-  event = await request.json()
-  if "Records" not in event:
-    return {"status": "ignored"}
+  try:
+    event = await request.json()
+    print(f"Event received: {event}")
 
-  for record in event.get("Records", []):
-    event_name = record.get("eventName", "")
-    if not event_name.startswith("s3:ObjectCreated:"):
-      continue
+    if "Records" not in event:
+      print("No 'Records' in event")
+      return {"status": "ignored"}
 
-    key = record.get("s3", {}).get("object", {}).get("key", "")
-    # Décoder l'URL de la clé
-    key = urllib.parse.unquote(key)
-    print("this is key: ", key)
+    for record in event.get("Records", []):
+      event_name = record.get("eventName", "")
+      print(f"Processing event: {event_name}")
 
-    if (key.endswith('/') or not os.path.splitext(key)[1]) and key.startswith("input/"):
-      if re.match(r"^input/FD_csv_EEC\d{2}/?$", key):
-        pass
-      else:
-        pass
-
-    elif key.startswith("input/"):
-      if re.match(r"^input/FD_csv_EEC\d{2}\.csv$", key):
-        dest = key.replace("input/", "raw/emploi/", 1)
-      elif re.match(r"^input/Varmod_EEC_\d{4}\.csv$", key):
-        dest = key.replace("input/", "metadata/emploi/", 1)
-      else:
+      if not event_name.startswith("s3:ObjectCreated:"):
+        print("Event ignored (not an ObjectCreated event)")
         continue
 
-      client.copy_object(MINIO_BUCKET, dest, f"/{MINIO_BUCKET}/{key}")
-      client.remove_object(MINIO_BUCKET, key)
+      key = record.get("s3", {}).get("object", {}).get("key", "")
+      key = urllib.parse.unquote(key)
+      print(f"Decoded key: {key}")
 
-  return {"status": "ok"}
+      if (key.endswith('/') or not os.path.splitext(key)[1]) and key.startswith("input/"):
+        print(f"Ignoring folder or invalid file: {key}")
+        continue
+
+      if key.startswith("input/"):
+        # Emploi
+        if re.match(r"^input/FD_csv_EEC\d{2}\.csv$", key):
+          dest = key.replace("input/", "raw/emploi/", 1)
+        elif re.match(r"^input/Varmod_EEC_\d{4}\.csv$", key):
+          dest = key.replace("input/", "metadata/emploi/", 1)
+
+        # Notebooks
+        elif "notebook" in key:
+          dest = key.replace("input/", "notebooks/", 1)
+
+        # Association
+        elif re.match(r"^input/rna_import_\d{8}_dpt_\d{2}\.csv$", key):
+          dest = key.replace("input/", "raw/association/", 1)
+
+        # Election
+        elif re.match(r"^input/rna_import_\d{8}_dpt_\d{2}\.csv$", key):
+          dest = key.replace("input/", "raw/election/", 1)
+
+        # Crime
+        elif "crime" in key:
+          dest = key.replace("input/", "raw/crime/", 1)
+
+        else:
+          print(f"File does not match expected patterns: {key}")
+          continue
+
+        print(f"Copying file to: {dest}")
+        source = CopySource(MINIO_BUCKET, key)
+        client.copy_object(MINIO_BUCKET, dest, source)
+        print(f"Removing original file: {key}")
+        client.remove_object(MINIO_BUCKET, key)
+
+    return {"status": "ok"}
+
+  except Exception as e:
+    print(f"Error processing event: {e}")
+    return {"status": "error", "message": str(e)}
