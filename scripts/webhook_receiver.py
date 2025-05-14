@@ -1,9 +1,10 @@
 import os
+import subprocess
 import urllib.parse
+from datetime import datetime
 from fastapi import FastAPI, Request
 from minio import Minio
 from minio.commonconfig import CopySource
-from datetime import datetime
 
 print("!!!!!!!!!!=== webhook_receiver.py ===!!!!!!!!!!")
 
@@ -24,6 +25,10 @@ client = Minio(
   secure=False
 )
 
+# Répertoire local pour les notebooks exécutés
+NOTEBOOK_LOCAL_DIR = "./executed_notebooks"
+os.makedirs(NOTEBOOK_LOCAL_DIR, exist_ok=True)
+
 @app.post("/")
 async def receive_event(request: Request):
   try:
@@ -41,6 +46,7 @@ async def receive_event(request: Request):
       "rna_import": "raw/association/",
       "presidentielle": "raw/election/",
       "crime": "raw/crime/",
+      "script": "scripts",
     }
 
     for record in event.get("Records", []):
@@ -84,6 +90,46 @@ async def receive_event(request: Request):
         # Delete original file in /input
         print(f"Removing original file: {key}")
         client.remove_object(MINIO_BUCKET, key)
+
+        # === NOUVELLE PARTIE : Exécuter le notebook s'il est dans notebooks/ ===
+        if path.startswith("notebooks/") and path.endswith(".ipynb"):
+          local_path = os.path.join(NOTEBOOK_LOCAL_DIR, os.path.basename(path))
+          executed_path = os.path.join(
+              NOTEBOOK_LOCAL_DIR, "executed_" + os.path.basename(path)
+          )
+
+          print(f"📥 Téléchargement du notebook : {path}")
+          client.fget_object(MINIO_BUCKET, path, local_path)
+
+          # Vérifier si le notebook est "association"
+          if "association" in os.path.basename(path):
+            print(f"⚙️ Exécution spécifique pour le notebook 'association' : {local_path}")
+            subprocess.run([
+              "jupyter", "nbconvert", "--to", "notebook", "--execute",
+              "--ExecutePreprocessor.timeout=600",
+              "--ExecutePreprocessor.allow_errors=True",
+              "--NotebookApp.iopub_data_rate_limit=10000000",
+              "--output", executed_path,
+              "--ExecutePreprocessor.kernel_name=python3",
+              "--execute", local_path
+            ])
+
+            # Copier le fichier Parquet généré dans MinIO
+            parquet_dir = "./association/parquet/bronze"
+            os.makedirs(parquet_dir, exist_ok=True)
+            parquet_files = glob.glob(os.path.join(parquet_dir, "*.parquet"))
+
+            for parquet_file in parquet_files:
+              parquet_key = f"output/bronze/association/{os.path.basename(parquet_file)}"
+              print(f"📤 Uploading Parquet file to MinIO: {parquet_key}")
+              client.fput_object(MINIO_BUCKET, parquet_key, parquet_file)
+          else:
+            print(f"⚙️ Exécution du notebook générique : {local_path}")
+            subprocess.run([
+              "jupyter", "nbconvert", "--to", "notebook", "--execute", local_path, "--output", executed_path
+            ])
+
+          print(f"✅ Notebook exécuté : {executed_path}")
 
     return {"status": "ok"}
 
