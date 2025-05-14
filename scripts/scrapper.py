@@ -13,8 +13,8 @@ MINIO_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD")
 MINIO_BUCKET = os.getenv("MINIO_BUCKET")
 
 # Configuration GitHub
-GITHUB_USER = "VincentDias"
-GITHUB_REPO = "Elexxion"
+GITHUB_USER = os.getenv("GITHUB_USER")
+GITHUB_REPO = os.getenv("GITHUB_REPO")
 GITHUB_BRANCH = "main"
 GITHUB_API_BASE = f"https://api.github.com/repos/{GITHUB_USER}/{GITHUB_REPO}/contents"
 
