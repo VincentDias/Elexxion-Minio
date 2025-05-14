@@ -37,21 +37,17 @@ client = Minio(
 
 try:
   if client.bucket_exists(MINIO_BUCKET):
-    print(f"Bucket '{MINIO_BUCKET}' existe déjà. Suppression en cours...")
-
     # Supprimer tous les objets dans le bucket
     objects = client.list_objects(MINIO_BUCKET, recursive=True)
     for obj in objects:
       client.remove_object(MINIO_BUCKET, obj.object_name)
-      print(f"Objet supprimé : {obj.object_name}")
 
     # Supprimer le bucket
     client.remove_bucket(MINIO_BUCKET)
-    print(f"Bucket '{MINIO_BUCKET}' supprimé.")
 
   # Recréer le bucket
   client.make_bucket(MINIO_BUCKET)
-  print(f"Bucket '{MINIO_BUCKET}' recréé.")
+  print(f"Nouveau bucket '{MINIO_BUCKET}'")
 
   # Arborescence à créer
   folders = [
@@ -77,7 +73,8 @@ try:
     "raw/association",
     "raw/crime",
     "raw/election",
-    "raw/emploi"
+    "raw/emploi",
+    "scripts"
   ]
 
   # Création arborescence de dossiers
