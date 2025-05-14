@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/vincentdias/Documents/EPSI/MSPR/Elexxion/notebooks/mlruns/926268465852158252/2580c89e4ff047dd9855d20e7c2e65db/artifacts
+end_time: 1747178454301
+entry_point_name: ''
+experiment_id: '926268465852158252'
+lifecycle_stage: active
+run_id: 2580c89e4ff047dd9855d20e7c2e65db
+run_name: mono_kpi_emploi
+run_uuid: 2580c89e4ff047dd9855d20e7c2e65db
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747178454223
+status: 4
+tags: []
+user_id: vincentdias

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 pandas
 minio
 python-dotenv
@@ -6,3 +7,12 @@ requests
 uvicorn[standard]
 jupyter
 notebook
+=======
+pandas==2.2.2
+minio==7.2.5
+python-dotenv==1.0.1
+fastapi==0.110.0
+uvicorn[standard]==0.29.0
+jupyter==1.0.0
+notebook==7.2.2
+>>>>>>> 9f1055ecc364f73691aac24b912ad8c9eba2086e

@@ -1,0 +1,6 @@
+artifact_location: file:///Users/vincentdias/Documents/EPSI/MSPR/Elexxion/notebooks/mlruns/926268465852158252
+creation_time: 1747178371616
+experiment_id: '926268465852158252'
+last_update_time: 1747178371616
+lifecycle_stage: active
+name: Elexxion_LightGBM_Optuna
