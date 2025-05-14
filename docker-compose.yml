@@ -71,6 +71,7 @@ services:
       sleep 5;
       mc alias set elexxion http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
       mc event add elexxion/elexxion-bucket arn:minio:sqs::webhook:webhook --event 'put' &&
+      python /app/scripts/scrapper.py &&
       tail -f /dev/null
       "
     environment:
@@ -79,6 +80,8 @@ services:
       MINIO_BUCKET: ${MINIO_BUCKET}
     env_file:
       - .env
+    volumes:
+      - ./scripts:/app/scripts
 
 volumes:
   minio_data:

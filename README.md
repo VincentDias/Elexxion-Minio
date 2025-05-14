@@ -67,6 +67,33 @@ Chaque composant peut être géré, mis à jour et déployé indépendamment, ce
 
 ```bash
 docker compose up --build
+docker compose build --no-cache
+```
+
+```bash
+docker rm -f $(docker ps -aq)
+docker rmi -f $(docker images -q)
+docker volume rm $(docker volume ls -q)
+docker network prune -f
+docker builder prune -af
+```
+
+```bash
+docker compose logs -f
+docker-compose restart webhook
+```
+
+```bash
+docker exec -it mc sh
+docker exec -it mc bash
+```
+
+```bash
+docker exec -it mc sh
+mc alias list
+mc ls elexxion/elexxion-bucket/input/
+mc cp /data/FD_csv_EEC22.csv elexxion/elexxion-bucket/input/
+mc cp ./FD_csv_EEC22.csv elexxion/elexxion-bucket/input/
 ```
 
 - [MinIO Local](http://localhost:9001)  
@@ -77,14 +104,14 @@ docker compose up --build
 ## 🧪 Tester le webhook manuellement
 
 ```bash
-curl -X POST http://localhost:8000/ -H "Content-Type: application/json" -d '{"test": "ok"}'
+curl -X POST -H "Content-Type: application/json" -d @test_event.json http://localhost:8000/
 ```
 
 ---
 
 ## ⚙️ Fonctionnement du webhook
 
-- Tout fichier ou dossier déposé dans input/ du bucket elexxion-elt déclenche le webhook.
+- Tout fichier ou dossier déposé dans le dossier input/ d'elexxion-bucket déclenche le webhook.
 - Si un fichier .csv nommé FD_csv_EECXX.csv est détecté, il est déplacé vers raw/emploi/.
 - Si un fichier .csv nommé Varmod_EEC_XXXX.csv est détecté, il est déplacé vers metadata/emploi/.
 
@@ -98,7 +125,7 @@ Variables d’environnement dans le .env :
 MINIO_ROOT_USER=minio
 MINIO_ROOT_PASSWORD=password
 MINIO_ENDPOINT=minio:9000
-MINIO_BUCKET=elexxion-elt
+MINIO_BUCKET=elexxion-bucket
 ```
 
 ---

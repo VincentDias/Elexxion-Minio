@@ -3,4 +3,5 @@ fastapi==0.110.0
 # pandas==2.2.2
 pandas
 python-dotenv==1.0.1
+requests
 uvicorn[standard]==0.29.0

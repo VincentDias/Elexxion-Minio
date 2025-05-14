@@ -5,6 +5,9 @@ from minio import Minio
 from minio.commonconfig import CopySource
 from datetime import datetime
 
+print("!!!!!!!!!!=== webhook_receiver.py ===!!!!!!!!!!")
+
+
 app = FastAPI()
 
 # Chargement des variables d'environnement

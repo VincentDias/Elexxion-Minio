@@ -1,21 +1,21 @@
+import os
 import requests
 from minio import Minio
-import os
 from pathlib import Path
 
-print("!!!!!!!!!!=== Début de scrapper.py ===!!!!!!!!!!")
+print("!!!!!!!!!!=== scrapper.py ===!!!!!!!!!!")
 
 
-# Configuration MinIO
+# MinIO config
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
 MINIO_USER = os.getenv("MINIO_ROOT_USER")
 MINIO_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD")
 MINIO_BUCKET = os.getenv("MINIO_BUCKET")
 
-# Configuration GitHub
+# GitHub Config
 GITHUB_USER = os.getenv("GITHUB_USER")
 GITHUB_REPO = os.getenv("GITHUB_REPO")
-GITHUB_BRANCH = "main"
+GITHUB_BRANCH = os.getenv("GITHUB_BRANCH")
 GITHUB_API_BASE = f"https://api.github.com/repos/{GITHUB_USER}/{GITHUB_REPO}/contents"
 
 client = Minio(
@@ -24,7 +24,6 @@ client = Minio(
   secret_key=MINIO_PASSWORD,
   secure=False
 )
-
 
 
 def list_repo_files(path=""):
@@ -38,12 +37,14 @@ def list_repo_files(path=""):
 
   files = []
   for item in items:
-    if item["type"] == "file" and item["name"].endswith(".csv"):
+    if item["name"] in [".gitignore", "README.md"]:
+      continue
+
+    if item["type"] == "file" and (item["name"].endswith(".csv") or item["name"].endswith(".ipynb")):
       files.append(item["path"])
     elif item["type"] == "dir":
       files += list_repo_files(item["path"])
   return files
-
 
 
 def upload_file_to_minio(file_path):
@@ -54,8 +55,8 @@ def upload_file_to_minio(file_path):
   response = requests.get(raw_url, stream=True)
   response.raise_for_status()
 
-  # Nom du fichier dans MinIO (dans "input/")
-  object_name = f"input/{file_path}"
+  file_name = Path(file_path).name
+  object_name = f"input/{file_name}"
 
   print(f"Uploading: {object_name}")
   client.put_object(
@@ -68,7 +69,6 @@ def upload_file_to_minio(file_path):
   print(f"✅ Fichier envoyé dans MinIO : {object_name}")
 
 
-
 def main():
   print("📦 Récupération des fichiers .csv depuis le dépôt GitHub...")
   all_csv_files = list_repo_files()
@@ -76,7 +76,6 @@ def main():
 
   for file_path in all_csv_files:
     upload_file_to_minio(file_path)
-
 
 
 if __name__ == "__main__":

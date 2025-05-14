@@ -1,15 +1,17 @@
+import io
+import os
 from datetime import datetime
 from minio import Minio
 from minio.error import S3Error
-import io
-import logging
-import os
-import logging
+
+print("!!!!!!!!!!=== init_structure.py ===!!!!!!!!!!")
+
 
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
 MINIO_USER = os.getenv("MINIO_ROOT_USER")
 MINIO_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD")
 MINIO_BUCKET = os.getenv("MINIO_BUCKET")
+MINIO_BUCKET = MINIO_BUCKET.lower()
 
 # Vérification des variables d'environnement
 if not MINIO_ENDPOINT:
@@ -24,7 +26,6 @@ if not MINIO_PASSWORD:
 if not MINIO_BUCKET:
   raise EnvironmentError("La variable d'environnement MINIO_BUCKET n'est pas définie.")
 
-MINIO_BUCKET = MINIO_BUCKET.lower()
 
 # Connexion au client MinIO
 client = Minio(
@@ -34,54 +35,23 @@ client = Minio(
   secure=False
 )
 
-print("Script init_structure.py bien lancé")
-
 try:
-  # Définir le dossier de logs relatif au WORKDIR du conteneur
-  LOG_DIR = "logs/init_structure"
-  os.makedirs(LOG_DIR, exist_ok=True)
+  if client.bucket_exists(MINIO_BUCKET):
+    print(f"Bucket '{MINIO_BUCKET}' existe déjà. Suppression en cours...")
 
-  # Génération du nom de fichier log dynamique
-  log_filename = datetime.now().strftime("init_%Y-%m-%d_%H%M%S.log")
-  log_path = os.path.join(LOG_DIR, log_filename)
+    # Supprimer tous les objets dans le bucket avant de le supprimer
+    objects = client.list_objects(MINIO_BUCKET, recursive=True)
+    for obj in objects:
+      client.remove_object(MINIO_BUCKET, obj.object_name)
+      print(f"Objet supprimé : {obj.object_name}")
 
-  # Configuration du logger
-  logging.basicConfig(
-    filename=log_path,
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s",
-  )
+    # Supprimer le bucket
+    client.remove_bucket(MINIO_BUCKET)
+    print(f"Bucket '{MINIO_BUCKET}' supprimé.")
 
-  # Affiche aussi les logs dans la console pour debug Docker
-  console_handler = logging.StreamHandler()
-  console_handler.setFormatter(logging.Formatter("%(levelname)s | %(message)s"))
-  logging.getLogger().addHandler(console_handler)
-
-  # Message de démarrage
-  logging.info("Démarrage de init_structure.py")
-
-  # Fonction pour logger les erreurs dans un fichier
-  def log_error(message):
-    date_str = datetime.now().strftime("%Y-%m-%d")
-    log_path = f"logs/init_structure/erreur_{date_str}.txt"
-    # Assurer que le dossier logs/init_structure/ existe localement
-    os.makedirs(os.path.dirname(log_path), exist_ok=True)
-    with open(log_path, "a", encoding="utf-8") as f:
-        f.write(f"{datetime.now().isoformat()} - {message}\n")
-
-  # Création du bucket s’il n'existe pas
-  try:
-    if not client.bucket_exists(MINIO_BUCKET):
-      client.make_bucket(MINIO_BUCKET)
-      print(f"Bucket '{MINIO_BUCKET}' créé.")
-      logging.info(f"Bucket créé : {MINIO_BUCKET}")
-    else:
-      print(f"Bucket '{MINIO_BUCKET}' existe déjà.")
-      logging.info(f"Bucket déjà existant : {MINIO_BUCKET}")
-  except S3Error as e:
-    error_message = f"Erreur lors de la vérification ou création du bucket : {e}"
-    print(error_message)
-    logging.error(f"Erreur lors de la création du bucket : {e}")
+  # Recréer le bucket
+  client.make_bucket(MINIO_BUCKET)
+  print(f"Bucket '{MINIO_BUCKET}' recréé.")
 
   # Arborescence à créer
   folders = [
@@ -110,8 +80,7 @@ try:
     "raw/association",
     "raw/crime",
     "raw/election",
-    "raw/emploi",
-    "scripts",
+    "raw/emploi"
   ]
 
   # Création arborescence de dossiers
@@ -123,11 +92,9 @@ try:
     except S3Error as e:
       error_message = f"Erreur lors de la création du dossier virtuel '{folder_path}' : {e}"
       print(error_message)
-      log_error(error_message)
 
   print("Arborescence initiale terminée.")
 
 except Exception as e:
   print(f"Une erreur inattendue s'est produite : {e}")
-  logging.error(f"Erreur inattendue : {e}", exc_info=True) # Ajoute exc_info=True pour plus de détails
-  exit(1) # Important : Quitte avec un code d'erreur pour signaler l'échec
+  exit(1)
