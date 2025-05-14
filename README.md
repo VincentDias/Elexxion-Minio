@@ -15,37 +15,41 @@
 
 ---
 
-## 📂 Arborescence du projet
+## 📂 Arborescence du bucket
 
-```plaintext
-elexxion_ELT/
-├── datas/
+```bash
+elexxion-bucket/
+├── input/
+├── metadata/
 │   ├── emploi/
-│   ├── criminalite/
-│   └── election/
-├── metadatas/
-│   ├── emploi/
-│   ├── criminalite/
-│   └── election/
 ├── notebooks/
-├── logs/
-└── output/
-    ├── bronze/
-    │   ├── emploi/
-    │   ├── criminalite/
-    │   └── election/
-    ├── argent/
-    │   ├── emploi/
-    │   ├── criminalite/
-    │   └── election/
-    ├── or/
-    │   ├── emploi/
-    │   ├── criminalite/
-    │   └── election/
-    └── platinium/
-        ├── emploi/
-        ├── criminalite/
-        └── election/
+├── output/
+│   ├── argent/
+│   │   ├── association/
+│   │   ├── crime/
+│   │   ├── election/
+│   │   ├── emploi/
+│   ├── bronze/
+│   │   ├── association/
+│   │   ├── crime/
+│   │   ├── election/
+│   │   ├── emploi/
+│   ├── or/
+│   │   ├── association/
+│   │   ├── crime/
+│   │   ├── election/
+│   │   ├── emploi/
+│   ├── platine/
+│   │   ├── association/
+│   │   ├── crime/
+│   │   ├── election/
+│   │   ├── emploi/
+├── raw/
+│   ├── association/
+│   ├── crime/
+│   ├── election/
+│   └── emploi/
+├── scripts/
 ```
 
 ---
