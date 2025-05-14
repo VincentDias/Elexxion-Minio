@@ -1,9 +1,9 @@
-from fastapi import FastAPI, Request
 import os
-import re
-from minio import Minio
 import urllib.parse
+from fastapi import FastAPI, Request
+from minio import Minio
 from minio.commonconfig import CopySource
+from datetime import datetime
 
 app = FastAPI()
 
@@ -31,6 +31,15 @@ async def receive_event(request: Request):
       print("No 'Records' in event")
       return {"status": "ignored"}
 
+    path_map = {
+      "FD_csv_EEC": "raw/emploi/",
+      "varmod_EEC_": "metadata/emploi/",
+      "notebook": "notebooks/",
+      "rna_import": "raw/association/",
+      "presidentielle": "raw/election/",
+      "crime": "raw/crime/",
+    }
+
     for record in event.get("Records", []):
       event_name = record.get("eventName", "")
       print(f"Processing event: {event_name}")
@@ -48,35 +57,28 @@ async def receive_event(request: Request):
         continue
 
       if key.startswith("input/"):
-        # Emploi
-        if re.match(r"^input/FD_csv_EEC\d{2}\.csv$", key):
-          dest = key.replace("input/", "raw/emploi/", 1)
-        elif re.match(r"^input/Varmod_EEC_\d{4}\.csv$", key):
-          dest = key.replace("input/", "metadata/emploi/", 1)
+        # Find path in path_map
+        path = None
+        for keyword, folder in path_map.items():
+          if keyword in key:
+            path = key.replace("input/", folder, 1)
+            break
 
-        # Notebooks
-        elif "notebook" in key:
-          dest = key.replace("input/", "notebooks/", 1)
-
-        # Association
-        elif re.match(r"^input/rna_import_\d{8}_dpt_\d{2}\.csv$", key):
-          dest = key.replace("input/", "raw/association/", 1)
-
-        # Election
-        elif re.match(r"^input/rna_import_\d{8}_dpt_\d{2}\.csv$", key):
-          dest = key.replace("input/", "raw/election/", 1)
-
-        # Crime
-        elif "crime" in key:
-          dest = key.replace("input/", "raw/crime/", 1)
-
-        else:
+        if not path:
           print(f"File does not match expected patterns: {key}")
           continue
 
-        print(f"Copying file to: {dest}")
+        # Add timestamp on filename
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        base, ext = os.path.splitext(path)
+        path = f"{base}_{timestamp}{ext}"
+
+        # Copy file to new location
+        print(f"Copying file to: {path}")
         source = CopySource(MINIO_BUCKET, key)
-        client.copy_object(MINIO_BUCKET, dest, source)
+        client.copy_object(MINIO_BUCKET, path, source)
+
+        # Delete original file in /input
         print(f"Removing original file: {key}")
         client.remove_object(MINIO_BUCKET, key)
 
