@@ -39,7 +39,7 @@ try:
   if client.bucket_exists(MINIO_BUCKET):
     print(f"Bucket '{MINIO_BUCKET}' existe déjà. Suppression en cours...")
 
-    # Supprimer tous les objets dans le bucket avant de le supprimer
+    # Supprimer tous les objets dans le bucket
     objects = client.list_objects(MINIO_BUCKET, recursive=True)
     for obj in objects:
       client.remove_object(MINIO_BUCKET, obj.object_name)
@@ -56,9 +56,6 @@ try:
   # Arborescence à créer
   folders = [
     "input",
-    "logs",
-    "logs/init_structure",
-    "logs/webhook_receiver",
     "metadata/emploi",
     "notebooks",
     "output/bronze/association",

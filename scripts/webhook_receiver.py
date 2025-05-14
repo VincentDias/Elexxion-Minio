@@ -36,7 +36,7 @@ async def receive_event(request: Request):
 
     path_map = {
       "FD_csv_EEC": "raw/emploi/",
-      "varmod_EEC_": "metadata/emploi/",
+      "Varmod_EEC_": "metadata/emploi/",
       "notebook": "notebooks/",
       "rna_import": "raw/association/",
       "presidentielle": "raw/election/",

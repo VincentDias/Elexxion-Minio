@@ -11,8 +11,7 @@ COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copier les autres scripts dans le conteneur
-COPY scripts/init_structure.py ./scripts/init_structure.py
-COPY scripts/scrapper.py ./scripts/scrapper.py
+COPY scripts/ ./scripts/
 
 # Exécuter les autres scripts
-CMD ["sh", "-c", "set -e; python scripts/init_structure.py ; python scripts/scrapper.py"]
+CMD ["python", "scripts/init_structure.py"]
