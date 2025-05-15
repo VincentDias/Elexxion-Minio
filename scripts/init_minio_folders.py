@@ -4,7 +4,7 @@ from datetime import datetime
 from minio import Minio
 from minio.error import S3Error
 
-print("!!!!!!!!!!=== init_structure.py ===!!!!!!!!!!")
+print("!!!!!!!!!!=== init_minio_folders.py ===!!!!!!!!!!")
 
 
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")

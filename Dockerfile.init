@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY scripts/ ./scripts/
 
 # Exécuter les autres scripts
-CMD ["python", "scripts/init_structure.py"]
+CMD ["python", "scripts/init_minio_folders.py"]

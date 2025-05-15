@@ -43,12 +43,12 @@ services:
   init:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: init_structure
+      dockerfile: Dockerfile.init
+    container_name: init_minio_folders
     volumes:
       - ./scripts:/app/scripts
     working_dir: /app/scripts
-    command: python init_structure.py
+    command: python init_minio_folders.py
     depends_on:
       minio:
         condition: service_healthy
