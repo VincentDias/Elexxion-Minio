@@ -61,7 +61,7 @@ Ce projet repose sur une architecture modulaire basée sur des microservices, ch
 - **minio client :** configurer l'événement webhook sur le bucket.
 - **minio :** service de stockage objet compatible S3.
 - **init_minio_folders :** script autonome chargé d’initialiser l’arborescence du bucket.
-- **webhook_api :** service observant l'état du folder d'entrée du bucket Minio S3.
+- **webhook_input :** service observant l'état du folder d'entrée du bucket Minio S3.
 - **webhook_aws :** replica automatisé vers AWS S3.
 - **scrapper :** container permettant de scrapper récursivement les données d'un repository ou autre serveur.
 
@@ -88,7 +88,7 @@ docker builder prune -af
 
 ```bash
 docker compose logs -f
-docker-compose restart webhook
+docker-compose restart webhook_input
 ```
 
 ```bash
@@ -98,19 +98,19 @@ docker exec -it mc bash
 
 ---
 
-## 🧪 Tester le webhook manuellement
+## ⚙️ Fonctionnement des webhook
 
-```bash
-curl -X POST -H "Content-Type: application/json" -d @test_event.json http://localhost:8000/
-```
-
----
-
-## ⚙️ Fonctionnement du webhook
+1. /input
 
 - Tout fichier déposé dans le dossier input/ d'elexxion-minio-bucket déclenche le webhook.
 - Si la présence d'un fichier est détecté, il est déplacé vers son path dans le bucket.
 - Le nom du fichier est préfixé du Timestamp à chaque étape.
+
+2. /aws
+
+- Pipeline replica AWS S3
+- "more explanation"
+- "more explanation"
 
 ---
 
