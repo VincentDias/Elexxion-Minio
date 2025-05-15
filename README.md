@@ -60,7 +60,7 @@ Ce projet repose sur une architecture modulaire basée sur des microservices, ch
 
 - **minio client :** configurer l'événement webhook sur le bucket.
 - **minio :** service de stockage objet compatible S3.
-- **init_minio_folders :** script autonome chargé d’initialiser l’arborescence du bucket.
+- **init :** script autonome chargé d’initialiser l’arborescence du bucket.
 - **webhook_input :** service observant l'état du folder d'entrée du bucket Minio S3.
 - **webhook_aws :** replica automatisé vers AWS S3.
 - **scrapper :** container permettant de scrapper récursivement les données d'un repository ou autre serveur.
@@ -80,10 +80,10 @@ docker compose build --no-cache
 
 ```bash
 docker rm -f $(docker ps -aq)
-docker rmi -f $(docker images -q)
 docker volume rm $(docker volume ls -q)
 docker network prune -f
 docker builder prune -af
+docker rmi -f $(docker images -q)
 ```
 
 ```bash
