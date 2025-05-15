@@ -94,16 +94,10 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       MINIO_BUCKET: ${MINIO_BUCKET}
+    volumes:
+      - ./scripts:/app/scripts
     entrypoint: >
-      /bin/sh -c "
-      mc alias set minio-local http://minio:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD &&
-      mc alias set aws-s3 https://s3.eu-west-1.amazonaws.com $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY &&
-      while true; do
-        echo "[$(date +'%Y-%m-%d %H:%M:%S')] Début de la synchronisation..." ;
-        mc mirror --overwrite --remove --region eu-west-1 minio-local/$MINIO_BUCKET/ aws-s3/elexxion-minio-bucket/ ;
-        echo "[$(date +'%Y-%m-%d %H:%M:%S')] Pause 60 s..." ;
-        sleep 60 ;
-      done
+      /bin/sh -c "/app/scripts/aws_sync.sh"
 
   scrapper:
     build:
