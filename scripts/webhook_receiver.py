@@ -1,3 +1,4 @@
+import glob
 import os
 import subprocess
 import urllib.parse
@@ -33,10 +34,8 @@ os.makedirs(NOTEBOOK_LOCAL_DIR, exist_ok=True)
 async def receive_event(request: Request):
   try:
     event = await request.json()
-    print(f"Event received: {event}")
 
     if "Records" not in event:
-      print("No 'Records' in event")
       return {"status": "ignored"}
 
     path_map = {
