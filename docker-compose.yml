@@ -105,7 +105,7 @@ services:
       dockerfile: Dockerfile.scrapper
     container_name: scrapper
     depends_on:
-      mc:
+      minio_client:
         condition: service_completed_successfully
     command: python /app/scripts/scrapper.py
     environment:
