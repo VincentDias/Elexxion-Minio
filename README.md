@@ -58,10 +58,12 @@ elexxion-minio-bucket/
 
 Ce projet repose sur une architecture modulaire basée sur des microservices, chacun conteneurisé avec Docker :
 
-- webhook_api : service FastAPI écoutant les événements webhook.
-- minio : service de stockage objet compatible S3.
-- init_structure : script autonome chargé d’initialiser l’arborescence du bucket.
-- minio client : configure l'événement webhook sur le bucket.
+- **minio client :** configurer l'événement webhook sur le bucket.
+- **minio :** service de stockage objet compatible S3.
+- **init_minio_folders :** script autonome chargé d’initialiser l’arborescence du bucket.
+- **webhook_api :** service observant l'état du folder d'entrée du bucket Minio S3.
+- **webhook_aws :** replica automatisé vers AWS S3.
+- **scrapper :** container permettant de scrapper récursivement les données d'un repository ou autre serveur.
 
 Chaque composant peut être géré, mis à jour et déployé indépendamment, ce qui favorise la scalabilité, l’automatisation et la résilience.
 

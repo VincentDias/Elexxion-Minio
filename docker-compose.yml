@@ -60,9 +60,9 @@ services:
     env_file:
       - .env
 
-  mc:
+  minio_client:
     image: minio/mc
-    container_name: mc
+    container_name: minio_client
     depends_on:
       init:
         condition: service_completed_successfully
