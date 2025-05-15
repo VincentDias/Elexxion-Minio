@@ -18,7 +18,7 @@
 ## 📂 Arborescence du bucket
 
 ```bash
-elexxion-bucket/
+elexxion-minio-bucket/
 ├── input/
 ├── metadata/
 │   ├── emploi/
@@ -69,6 +69,8 @@ Chaque composant peut être géré, mis à jour et déployé indépendamment, ce
 
 ## ▶️ Lancement rapide
 
+- [MinIO Local](http://localhost:9001)  
+
 ```bash
 docker compose up --build
 docker compose build --no-cache
@@ -92,7 +94,6 @@ docker exec -it mc sh
 docker exec -it mc bash
 ```
 
-- [MinIO Local](http://localhost:9001)  
 
 ---
 
@@ -106,9 +107,9 @@ curl -X POST -H "Content-Type: application/json" -d @test_event.json http://loca
 
 ## ⚙️ Fonctionnement du webhook
 
-- Tout fichier déposé dans le dossier input/ d'elexxion-bucket déclenche le webhook.
+- Tout fichier déposé dans le dossier input/ d'elexxion-minio-bucket déclenche le webhook.
 - Si la présence d'un fichier est détecté, il est déplacé vers son path dans le bucket.
-- Le nom du fichier est préfixé du Timestamp.
+- Le nom du fichier est préfixé du Timestamp à chaque étape.
 
 ---
 
