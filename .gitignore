@@ -23,3 +23,26 @@ data/
 
 # Minio client configuration
 mc-config/
+
+# Files
+__pycache__/
+.vscode/
+.idea/
+.idea
+.DS_Store
+*.py[cod]
+*$py.class
+notebooks/mlruns
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# MinIO
+data/
+*.parquet
+*.csv
+*.log
+mc-config/
+
+# Project
+.env
