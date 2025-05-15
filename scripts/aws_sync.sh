@@ -7,8 +7,8 @@ while true; do
     --overwrite \
     --remove \
     --region eu-west-1 \
-    minio-local/elexxion-elt/ \
-    aws-s3/elexxion-minio-bucket/
+    minio-local/elexxion-minio-bucket/ \
+    aws-s3/elexxion-aws-bucket/
   echo "[`date +'%Y-%m-%d %H:%M:%S'`] Pause 60 s..."
   sleep 60
 done
