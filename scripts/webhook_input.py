@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request
 from minio import Minio
 from minio.commonconfig import CopySource
 
-print("!!!!!!!!!!=== webhook_receiver.py ===!!!!!!!!!!")
+print("!!!!!!!!!!=== webhook_input.py ===!!!!!!!!!!")
 
 
 app = FastAPI()

@@ -11,7 +11,7 @@ COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copie le code source de l'application (scripts) dans l'image
-COPY scripts/webhook_receiver.py ./scripts/webhook_receiver.py
+COPY scripts/webhook_input.py ./scripts/webhook_input.py
 
 # Commande de lancement de l’API webhook avec uvicorn
-CMD ["uvicorn", "scripts.webhook_receiver:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "scripts.webhook_input:app", "--host", "0.0.0.0", "--port", "8000"]
