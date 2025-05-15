@@ -40,7 +40,7 @@ def list_repo_files(path=""):
     if item["name"] in [".gitignore", "README.md"]:
       continue
 
-    if item["type"] == "file" and (item["name"].endswith(".csv") or item["name"].endswith(".ipynb")):
+    if item["type"] == "file" and (item["name"].endswith(".csv") or item["name"].endswith(".ipynb") or item["name"].endswith(".py")):
       files.append(item["path"])
     elif item["type"] == "dir":
       files += list_repo_files(item["path"])
