@@ -28,10 +28,9 @@ client = Minio(
 async def receive_event(request: Request):
   try:
     event = await request.json()
-    print(f"Event received: {event}")
+    print("📥​ Event received 📥​")
 
     if "Records" not in event:
-      print("No 'Records' in event")
       return {"status": "ignored"}
 
     path_map = {
@@ -46,18 +45,16 @@ async def receive_event(request: Request):
 
     for record in event.get("Records", []):
       event_name = record.get("eventName", "")
-      print(f"Processing event: {event_name}")
+      print(f"​🔃​ Processing event: {event_name}")
 
       if not event_name.startswith("s3:ObjectCreated:"):
-        print("Event ignored (not an ObjectCreated event)")
         continue
 
       key = record.get("s3", {}).get("object", {}).get("key", "")
       key = urllib.parse.unquote(key)
-      print(f"Decoded key: {key}")
+      print(f"📂 File path : {key}")
 
       if (key.endswith('/') or not os.path.splitext(key)[1]) and key.startswith("input/"):
-        print(f"Ignoring folder or invalid file: {key}")
         continue
 
       if key.startswith("input/"):
@@ -83,7 +80,7 @@ async def receive_event(request: Request):
         filename = os.path.basename(key)
 
         if minio_file_exists(client, MINIO_BUCKET, folder, filename):
-          print(f"A file {filename} already exists in {folder} ...")
+          print(f"🙀 A file {filename} already exists in {folder} ...")
           client.remove_object(MINIO_BUCKET, key)
           continue
 
@@ -98,7 +95,7 @@ async def receive_event(request: Request):
     return {"status": "ok"}
 
   except Exception as e:
-    print(f"Error processing event: {e}")
+    print(f"💣 Error processing event: {e}")
     return {"status": "error", "message": str(e)}
 
 
