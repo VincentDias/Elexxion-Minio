@@ -4,7 +4,7 @@ from datetime import datetime
 from minio import Minio
 from minio.error import S3Error
 
-print("!!!!!!!!!!=== init.py ===!!!!!!!!!!")
+print("🏁🏁🏁🏁🏁🏁🏁 init.py 🏁🏁🏁🏁🏁🏁🏁")
 
 
 # Chargement des variables d'environnement

@@ -3,7 +3,7 @@ import requests
 from minio import Minio
 from pathlib import Path
 
-print("!!!!!!!!!!=== scrapper.py ===!!!!!!!!!!")
+print("🏁🏁🏁🏁🏁🏁🏁 scrapper.py 🏁🏁🏁🏁🏁🏁🏁")
 
 
 # MinIO config

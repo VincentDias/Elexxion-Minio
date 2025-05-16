@@ -10,7 +10,7 @@ while true; do
     --watch \
     minio-local/elexxion-minio-bucket/ \
     aws-s3/elexxion-aws-bucket/ | while read line; do
-      echo "[`date +'%Y-%m-%d %H:%M:%S'`] $line"
+      echo "✈️​ [`date +'%Y-%m-%d %H:%M:%S'`] $line"
   done
   echo "[`date +'%Y-%m-%d %H:%M:%S'`] Pause 60 s..."
   sleep 60
