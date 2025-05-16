@@ -5,7 +5,7 @@ from minio import Minio
 from minio.commonconfig import CopySource
 from datetime import datetime
 
-print("🏁🏁🏁🏁🏁🏁🏁 webhook_receiver.py 🏁🏁🏁🏁🏁🏁🏁")
+print("🏁🏁🏁🏁🏁🏁🏁 webhook_input.py 🏁🏁🏁🏁🏁🏁🏁")
 
 
 app = FastAPI()

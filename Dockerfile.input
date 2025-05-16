@@ -1,17 +1,9 @@
-# Expose un webhook (fastApi)
 FROM python:3.11-slim
 
-# Définit le dossier de travail dans le conteneur
 WORKDIR /app
 
-# Copie le fichier des dépendances
 COPY requirements.txt /app/requirements.txt
-
-# Installe les dépendances sans cache
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copie le code source de l'application (scripts) dans l'image
 COPY scripts/webhook_input.py ./scripts/webhook_input.py
 
-# Commande de lancement de l’API webhook avec uvicorn
 CMD ["uvicorn", "scripts.webhook_input:app", "--host", "0.0.0.0", "--port", "8000"]

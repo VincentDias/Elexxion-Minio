@@ -1,15 +1,9 @@
-# Dockerfile pour le scrapper
 FROM python:3.13-slim
 
-# Définir le répertoire de travail dans le conteneur
 WORKDIR /app
 
-# Copier et installer les dépendances Python
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copier uniquement le script scrapper
 COPY scripts/scrapper.py ./scripts/
 
-# Commande par défaut pour exécuter le scrapper
 CMD ["python", "scripts/scrapper.py"]
