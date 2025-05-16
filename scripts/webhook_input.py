@@ -41,6 +41,7 @@ async def receive_event(request: Request):
       "rna_import": "raw/association/",
       "presidentielle": "raw/election/",
       "crime": "raw/crime/",
+      "script": "scripts/"
     }
 
     for record in event.get("Records", []):
