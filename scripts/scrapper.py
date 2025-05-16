@@ -18,6 +18,7 @@ GITHUB_REPO = os.getenv("GITHUB_REPO")
 GITHUB_BRANCH = os.getenv("GITHUB_BRANCH")
 GITHUB_API_BASE = f"https://api.github.com/repos/{GITHUB_USER}/{GITHUB_REPO}/contents"
 
+# Connexion au client MinIO
 client = Minio(
   MINIO_ENDPOINT,
   access_key=MINIO_USER,
@@ -49,7 +50,7 @@ def list_repo_files(path=""):
 
 def upload_file_to_minio(file_path):
   """
-  Télécharge un fichier brut depuis GitHub et l'envoie dans le dossier input/ de MinIO
+  Télécharge un fichier brut depuis GitHub et l'envoie dans le dossier input/ du bucket minio
   """
   raw_url = f"https://raw.githubusercontent.com/{GITHUB_USER}/{GITHUB_REPO}/{GITHUB_BRANCH}/{file_path}"
   response = requests.get(raw_url, stream=True)
@@ -58,7 +59,7 @@ def upload_file_to_minio(file_path):
   file_name = Path(file_path).name
   object_name = f"input/{file_name}"
 
-  print(f"Uploading: {object_name}")
+  print(f"🛒​ Uploading : {object_name}")
   client.put_object(
     bucket_name=MINIO_BUCKET,
     object_name=object_name,
@@ -66,11 +67,11 @@ def upload_file_to_minio(file_path):
     length=int(response.headers.get('Content-Length', 0)),
     content_type="text/csv"
   )
-  print(f"✅ Fichier envoyé dans MinIO : {object_name}")
+  print(f"✅ {object_name} file nicely move to /input")
 
 
 def main():
-  print("📦 Récupération des fichiers depuis le dépôt GitHub...")
+  print("📦 Get files from GitHub storage...")
   all_csv_files = list_repo_files()
   print(f"✅ {len(all_csv_files)} fichiers CSV trouvés.")
 

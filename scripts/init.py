@@ -7,25 +7,12 @@ from minio.error import S3Error
 print("!!!!!!!!!!=== init.py ===!!!!!!!!!!")
 
 
+# Chargement des variables d'environnement
 MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
 MINIO_USER = os.getenv("MINIO_ROOT_USER")
 MINIO_PASSWORD = os.getenv("MINIO_ROOT_PASSWORD")
 MINIO_BUCKET = os.getenv("MINIO_BUCKET")
 MINIO_BUCKET = MINIO_BUCKET.lower()
-
-# Vérification des variables d'environnement
-if not MINIO_ENDPOINT:
-  raise EnvironmentError("La variable d'environnement MINIO_ENDPOINT n'est pas définie.")
-
-if not MINIO_USER:
-  raise EnvironmentError("La variable d'environnement MINIO_ROOT_USER n'est pas définie.")
-
-if not MINIO_PASSWORD:
-  raise EnvironmentError("La variable d'environnement MINIO_ROOT_PASSWORD n'est pas définie.")
-
-if not MINIO_BUCKET:
-  raise EnvironmentError("La variable d'environnement MINIO_BUCKET n'est pas définie.")
-
 
 # Connexion au client MinIO
 client = Minio(
@@ -47,7 +34,7 @@ try:
 
   # Recréer le bucket
   client.make_bucket(MINIO_BUCKET)
-  print(f"Nouveau bucket '{MINIO_BUCKET}'")
+  print(f"✅ New bucket '{MINIO_BUCKET}' created")
 
   # Arborescence à créer
   folders = [
@@ -82,13 +69,13 @@ try:
     folder_path = f"{folder}/"
     try:
       client.put_object(MINIO_BUCKET, folder_path, data=io.BytesIO(b''), length=0)
-      print(f"Dossier virtuel créé : {folder_path}")
+      print(f"📂 created folder : {folder_path}")
     except S3Error as e:
-      error_message = f"Erreur lors de la création du dossier virtuel '{folder_path}' : {e}"
+      error_message = f"💣 Error during folder creation '{folder_path}' : {e}"
       print(error_message)
 
-  print("Arborescence initiale terminée.")
+  print("✅ Init done.")
 
 except Exception as e:
-  print(f"Une erreur inattendue s'est produite : {e}")
+  print(f"💣 Unexpected error occured : {e}")
   exit(1)
