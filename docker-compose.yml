@@ -80,6 +80,25 @@ services:
     env_file:
       - .env
 
+  webhook_aws:
+    image: minio/mc
+    container_name: webhook_aws
+    depends_on:
+      minio:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+    volumes:
+      - ./scripts:/app/scripts
+    entrypoint: >
+      /bin/sh -c "/app/scripts/aws_sync.sh"
+
   scrapper:
     build:
       context: .
