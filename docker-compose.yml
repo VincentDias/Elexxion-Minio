@@ -22,27 +22,7 @@ services:
       retries: 3
       start_period: 10s
 
-  minio_client:
-    image: minio/mc
-    container_name: minio_client
-    depends_on:
-      init:
-        condition: service_completed_successfully
-    entrypoint: >
-      /bin/sh -c "
-      sleep 5;
-      mc alias set elexxion http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
-      mc event add elexxion/elexxion-minio-bucket arn:minio:sqs::webhook:webhook --event 'put' &&
-      tail -f /dev/null
-      "
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-      MINIO_BUCKET: ${MINIO_BUCKET}
-    env_file:
-      - .env
-
-  webhook_input:
+  webhook:
     build:
       context: .
       dockerfile: Dockerfile.input
@@ -74,6 +54,26 @@ services:
         condition: service_healthy
     environment:
       MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+    env_file:
+      - .env
+
+  minio_client:
+    image: minio/mc
+    container_name: minio_client
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      mc alias set elexxion http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
+      mc event add elexxion/elexxion-minio-bucket arn:minio:sqs::webhook:webhook --event 'put' &&
+      tail -f /dev/null
+      "
+    environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       MINIO_BUCKET: ${MINIO_BUCKET}
