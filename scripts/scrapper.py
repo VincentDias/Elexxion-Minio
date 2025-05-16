@@ -70,7 +70,7 @@ def upload_file_to_minio(file_path):
 
 
 def main():
-  print("📦 Récupération des fichiers .csv depuis le dépôt GitHub...")
+  print("📦 Récupération des fichiers depuis le dépôt GitHub...")
   all_csv_files = list_repo_files()
   print(f"✅ {len(all_csv_files)} fichiers CSV trouvés.")
 
