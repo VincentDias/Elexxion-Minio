@@ -59,7 +59,7 @@ def upload_file_to_minio(file_path):
   file_name = Path(file_path).name
   object_name = f"input/{file_name}"
 
-  print(f"🛒​ Uploading : {object_name}")
+  print(f"🛒​ Uploading '{object_name}'")
   client.put_object(
     bucket_name=MINIO_BUCKET,
     object_name=object_name,
@@ -67,7 +67,7 @@ def upload_file_to_minio(file_path):
     length=int(response.headers.get('Content-Length', 0)),
     content_type="text/csv"
   )
-  print(f"✅ {object_name} file nicely move to /input")
+  print(f"✅ '{object_name}' file nicely move to /input")
 
 
 def main():

@@ -52,7 +52,7 @@ async def receive_event(request: Request):
 
       key = record.get("s3", {}).get("object", {}).get("key", "")
       key = urllib.parse.unquote(key)
-      print(f"📂 File path : {key}")
+      print(f"📂 File path => {key}")
 
       if (key.endswith('/') or not os.path.splitext(key)[1]) and key.startswith("input/"):
         continue
@@ -80,8 +80,9 @@ async def receive_event(request: Request):
         filename = os.path.basename(key)
 
         if minio_file_exists(client, MINIO_BUCKET, folder, filename):
-          print(f"🙀 A file {filename} already exists in {folder} ...")
+          print(f"🙀 A file '{filename}' already exists in {folder} ...")
           client.remove_object(MINIO_BUCKET, key)
+          print(f"🔥 File '{filename}' deleted.")
           continue
 
         # Copy file to new location

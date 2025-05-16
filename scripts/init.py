@@ -69,7 +69,7 @@ try:
     folder_path = f"{folder}/"
     try:
       client.put_object(MINIO_BUCKET, folder_path, data=io.BytesIO(b''), length=0)
-      print(f"📂 created folder : {folder_path}")
+      print(f"📂 created folder => {folder_path}")
     except S3Error as e:
       error_message = f"💣 Error during folder creation '{folder_path}' : {e}"
       print(error_message)
