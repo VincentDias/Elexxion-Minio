@@ -4,7 +4,7 @@ import subprocess
 from fastapi import FastAPI, Request
 from minio import Minio
 
-print("🏁🏁🏁🏁🏁🏁🏁 exec.py 🏁🏁🏁🏁🏁🏁🏁")
+print("🏁🏁🏁🏁🏁🏁🏁 webhook_exec.py 🏁🏁🏁🏁🏁🏁🏁")
 
 
 app = FastAPI()
@@ -53,3 +53,7 @@ async def receive_event(request: Request):
   except Exception as e:
     print(f"💣 Error processing event : {e}")
     return {"status": "error", "message": str(e)}
+
+@app.get("/health")
+async def health():
+  return {"status": "ok"}

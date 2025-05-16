@@ -123,3 +123,8 @@ def minio_file_exists(client, bucket, folder, filename):
       break
 
   return found
+
+
+@app.get("/health")
+async def health():
+  return {"status": "ok"}

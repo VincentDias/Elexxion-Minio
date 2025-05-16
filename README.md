@@ -106,7 +106,7 @@ docker exec -it mc bash
 - Si la présence d'un fichier est détecté, il est déplacé vers son path dans le bucket.
 - Le nom du fichier est préfixé du Timestamp à chaque étape.
 
-2. /aws
+1. /aws
 
 - Pipeline replica AWS S3
 - "more explanation"

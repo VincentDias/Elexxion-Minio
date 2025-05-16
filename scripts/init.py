@@ -15,6 +15,7 @@ MINIO_BUCKET = os.getenv("MINIO_BUCKET")
 MINIO_BUCKET = MINIO_BUCKET.lower()
 
 # Connexion au client MinIO
+print(f"🦾​ MinIO is connected on '{MINIO_ENDPOINT}' with user '{MINIO_USER}'")
 client = Minio(
   MINIO_ENDPOINT,
   access_key=MINIO_USER,

@@ -20,25 +20,9 @@ services:
       interval: 5s
       timeout: 3s
       retries: 3
-      start_period: 10s
-
-  webhook:
-    build:
-      context: .
-      dockerfile: Dockerfile.input
-    container_name: webhook_input
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./scripts:/app/scripts
-    depends_on:
-      - minio
-    environment:
-      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-      - MINIO_BUCKET=${MINIO_BUCKET}
-    command: uvicorn scripts.webhook_input:app --host 0.0.0.0 --port 8000 --reload
+      start_period: 30s
+    networks:
+      - my_network
 
   init:
     build:
@@ -59,6 +43,35 @@ services:
       MINIO_BUCKET: ${MINIO_BUCKET}
     env_file:
       - .env
+    networks:
+      - my_network
+
+  webhook:
+    build:
+      context: .
+      dockerfile: Dockerfile.input
+    container_name: webhook_input
+    hostname: webhook_input
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./scripts:/app/scripts
+    depends_on:
+      - minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+    command: uvicorn scripts.webhook_input:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    networks:
+      - my_network
 
   minio_client:
     image: minio/mc
@@ -68,36 +81,19 @@ services:
         condition: service_completed_successfully
     entrypoint: >
       /bin/sh -c "
-      sleep 5;
-      mc alias set elexxion http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
-      mc event add elexxion/elexxion-minio-bucket arn:minio:sqs::webhook:webhook --event 'put' &&
+      sleep 15;
+      mc alias set minio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
+      mc event add minio/elexxion-minio-bucket arn:minio:sqs::webhook:webhook --event put &&
       tail -f /dev/null
       "
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       MINIO_BUCKET: ${MINIO_BUCKET}
+    networks:
+      - my_network
     env_file:
       - .env
-
-  webhook_aws:
-    image: minio/mc
-    container_name: webhook_aws
-    depends_on:
-      minio:
-        condition: service_healthy
-    env_file:
-      - .env
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      MINIO_BUCKET: ${MINIO_BUCKET}
-    volumes:
-      - ./scripts:/app/scripts
-    entrypoint: >
-      /bin/sh -c "/app/scripts/aws_sync.sh"
 
   scrapper:
     build:
@@ -120,3 +116,7 @@ services:
 
 volumes:
   minio_data:
+
+networks:
+  my_network:
+    driver: bridge
