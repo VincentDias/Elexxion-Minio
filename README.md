@@ -74,7 +74,9 @@ Chaque composant peut être géré, mis à jour et déployé indépendamment, ce
 - [MinIO Local](http://localhost:9001)  
 
 ```bash
+docker compose down -v
 docker compose up --build
+
 docker compose build --no-cache
 ```
 
@@ -88,12 +90,12 @@ docker rmi -f $(docker images -q)
 
 ```bash
 docker compose logs -f
-docker-compose restart webhook_input
+docker-compose restart webhook
 ```
 
 ```bash
-docker exec -it mc sh
-docker exec -it mc bash
+docker exec -it minio_client sh
+docker exec -it minio_client bash
 ```
 
 ---
