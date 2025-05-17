@@ -5,7 +5,7 @@ from minio import Minio
 from minio.commonconfig import CopySource
 from datetime import datetime
 
-print("🏁🏁🏁🏁🏁🏁🏁 webhook_input.py 🏁🏁🏁🏁🏁🏁🏁")
+print("🏁🏁🏁🏁🏁🏁🏁 webhook.py 🏁🏁🏁🏁🏁🏁🏁")
 
 
 app = FastAPI()
@@ -34,13 +34,13 @@ async def receive_event(request: Request):
       return {"status": "ignored"}
 
     path_map = {
+      "script": "scripts/",
+      "notebook": "notebooks/",
       "FD_csv_EEC": "raw/emploi/",
       "Varmod_EEC_": "metadata/emploi/",
-      "notebook": "notebooks/",
       "rna_import": "raw/association/",
       "presidentielle": "raw/election/",
       "crime": "raw/crime/",
-      "script": "scripts/"
     }
 
     for record in event.get("Records", []):
