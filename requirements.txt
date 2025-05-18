@@ -1,8 +1,8 @@
 minio==7.2.5
 fastapi==0.110.0
-# pandas==2.2.2
-pandas
+pandas==2.2.3
+pyarrow==19.0.0
 python-dotenv==1.0.1
-requests
-s3fs
+requests==2.32.3
+s3fs==2025.3.2
 uvicorn[standard]==0.29.0

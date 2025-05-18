@@ -1,4 +1,5 @@
 import os
+import subprocess
 import urllib.parse
 from fastapi import FastAPI, Request
 from minio import Minio
@@ -92,6 +93,36 @@ async def receive_event(request: Request):
 
         # Delete original file in /input
         client.remove_object(MINIO_BUCKET, key)
+
+      if key.startswith("scripts/") and not key.endswith("/") and os.path.splitext(key)[1]:
+        print(f"🚀 Detected script file in 'scripts/': {key}")
+
+        category_map = {
+          "election": "raw/election/",
+          "emploi": "raw/emploi/",
+          "association": "raw/association/",
+          "crime": "raw/crime/"
+        }
+
+        matched_category = None
+        for cat in category_map:
+          if cat in key:
+            matched_category = cat
+            break
+
+        try:
+          if matched_category:
+            print(f"🔍 Detected category: {matched_category}")
+            subprocess.Popen([
+              "python",
+              "/app/scripts/pipeline.py",
+              matched_category,
+              category_map[matched_category]
+            ])
+          else:
+            print("⚠️ Aucun mot-clé de catégorie détecté dans le nom du fichier.")
+        except Exception as e:
+          print(f"💥 Échec d'exécution du script pipeline : {e}")
 
     return {"status": "ok"}
 
