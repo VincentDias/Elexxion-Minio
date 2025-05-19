@@ -76,10 +76,15 @@ def upload_file_to_minio(file_path):
 
 def main():
   print("📦 Get files from GitHub storage...")
-  all_csv_files = list_repo_files()
-  print(f"✅ {len(all_csv_files)} files found.")
+  all_files = list_repo_files()
+  print(f"✅ {len(all_files)} files found.")
 
-  for file_path in all_csv_files:
+  # At first, we prioritize the files that are not scripts or notebooks
+  prioritized = [f for f in all_files if "script" not in f.lower() and "notebook" not in f.lower()]
+  delayed = [f for f in all_files if "script" in f.lower() or "notebook" in f.lower()]
+  sorted_files = prioritized + delayed
+
+  for file_path in sorted_files:
     upload_file_to_minio(file_path)
 
 
