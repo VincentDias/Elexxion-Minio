@@ -53,6 +53,7 @@ def run_script_for_category(category: str, raw_path: str):
 
       print(f"🚀 Running script: {local_path}")
       run_python_script(local_path)
+
       print(f"✅ Script executed successfully !")
 
     except Exception as e:

@@ -120,9 +120,9 @@ async def receive_event(request: Request):
               category_map[matched_category]
             ])
           else:
-            print("⚠️ Aucun mot-clé de catégorie détecté dans le nom du fichier.")
+            print("⚠️ No category keyword detected in the file name !")
         except Exception as e:
-          print(f"💥 Échec d'exécution du script pipeline : {e}")
+          print(f"💥 Pipeline execution failed : {e}")
 
     return {"status": "ok"}
 

@@ -1,5 +1,6 @@
 import os
 import requests
+from io import BytesIO
 from minio import Minio
 from pathlib import Path
 
@@ -28,9 +29,6 @@ client = Minio(
 
 
 def list_repo_files(path=""):
-  """
-  Parcourt récursivement les fichiers du dépôt GitHub en utilisant l'API GitHub
-  """
   url = f"{GITHUB_API_BASE}/{path}?ref={GITHUB_BRANCH}"
   response = requests.get(url)
   response.raise_for_status()
@@ -52,24 +50,43 @@ def list_repo_files(path=""):
   return files
 
 
+def detect_content_type(extension: str) -> str:
+  if extension == ".csv":
+    return "text/csv"
+  elif extension == ".py":
+    return "text/plain"
+  elif extension == ".ipynb":
+    return "application/json"
+  return "application/octet-stream"
+
+
 def upload_file_to_minio(file_path):
-  """
-  Télécharge un fichier brut depuis GitHub et l'envoie dans le dossier input/ du bucket minio
-  """
   raw_url = f"https://raw.githubusercontent.com/{GITHUB_USER}/{GITHUB_REPO}/{GITHUB_BRANCH}/{file_path}"
   response = requests.get(raw_url, stream=True)
   response.raise_for_status()
 
+  buffer = BytesIO(response.content)
+  buffer.seek(0)
+  data = buffer.read()
+
+  if b"\x00" in data:
+    print(f"❌ File '{file_path}' contains null bytes. Ignored.")
+    return
+
+  extension = Path(file_path).suffix
+  content_type = detect_content_type(extension)
+
   file_name = Path(file_path).name
   object_name = f"input/{file_name}"
 
-  print(f"🛒​ Uploading '{object_name}'")
+  print(f"🛒​ Uploading '{object_name}' with content-type '{content_type}'")
+  buffer.seek(0)
   client.put_object(
     bucket_name=MINIO_BUCKET,
     object_name=object_name,
-    data=response.raw,
-    length=int(response.headers.get('Content-Length', 0)),
-    content_type="text/csv"
+    data=buffer,
+    length=len(data),
+    content_type=content_type
   )
   print(f"✅ '{object_name}' file nicely move to /input")
 
