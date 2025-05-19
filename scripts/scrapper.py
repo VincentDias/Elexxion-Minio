@@ -38,7 +38,7 @@ def list_repo_files(path=""):
 
   files = []
   for item in items:
-    if item["name"] in [".gitignore", "README.md"]:
+    if item["name"] in [".gitignore", "README.md", "requirements.txt"]:
       continue
 
     if item["type"] == "file" and (
@@ -49,7 +49,7 @@ def list_repo_files(path=""):
       files.append(item["path"])
     elif item["type"] == "dir":
       files += list_repo_files(item["path"])
-    return files
+  return files
 
 
 def upload_file_to_minio(file_path):
