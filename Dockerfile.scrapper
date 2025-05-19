@@ -4,6 +4,6 @@ WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY scripts/scrapper.py ./scripts/
+COPY scripts/scrapper.py ./scripts/scrapper.py
 
 CMD ["python", "scripts/scrapper.py"]
