@@ -1,6 +1,7 @@
-import os
-import sys
 import importlib.util
+import os
+import re
+import sys
 from minio import Minio
 from dotenv import load_dotenv
 
@@ -29,11 +30,14 @@ os.makedirs(LOCAL_SCRIPT_DIR, exist_ok=True)
 def run_script_for_category(category: str, raw_path: str):
   print(f"🏁 Start to execute category: {category}")
 
-  # Liste des objets dans scripts/ sur MinIO
+  strict_pattern = re.compile(
+    rf"^scripts/script_elexxion_{category}_bronze_\d{{14}}\.py$"
+  )
+
   objects = client.list_objects(MINIO_BUCKET, prefix="scripts/", recursive=True)
   matching_scripts = [
     obj.object_name for obj in objects
-    if obj.object_name.endswith(".py") and category in obj.object_name
+    if strict_pattern.match(obj.object_name)
   ]
 
   if not matching_scripts:
@@ -58,11 +62,15 @@ def run_python_script(script_path: str):
   module_name = os.path.splitext(os.path.basename(script_path))[0]
   spec = importlib.util.spec_from_file_location(module_name, script_path)
   module = importlib.util.module_from_spec(spec)
+
+  # Passe le chemin raw comme attribut du module
+  # setattr(module, "RAW_PATH", raw_path)
+
   spec.loader.exec_module(module)
 
 if __name__ == "__main__":
   if len(sys.argv) != 3:
-    print("❌ Usage attendu : python pipeline.py <category> <raw_path>")
+    print("❌ Usage attendu : python pipeline.py <category>")
     sys.exit(1)
 
   category_arg = sys.argv[1]
